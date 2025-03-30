@@ -1,7 +1,7 @@
 const prisma = require('../config/database');
 const bcrypt = require('bcrypt');
 const {JWT_KEY , SALT} = require('../config/serverConfig')
-
+const jwt = require('jsonwebtoken')
 
 const signup = async (req , res)=>{
         const {email , password} = req.body;
@@ -21,9 +21,10 @@ const signup = async (req , res)=>{
             const user = await prisma.user.create({
                 data : {
                     email : email ,
-                    passsword : bcryptedPassword
+                    password : bcryptedPassword
                 }
             })
+            // console.log(user);
 
             return res.status(201).json({
                 message : 'user created succesfully ',
@@ -52,12 +53,13 @@ const login = async (req,res) => {
         const user = await prisma.user.findUnique({where : {
             email : email
         }})
+        // console.log(user);
         if(!user){
             return res.status(400).json({
                 message : 'Invalid email'
             })
         }
-        const isValid = bcrypt.compareSync(password , user.passsword);
+        const isValid = bcrypt.compareSync(password , user.password);
         if(!isValid){
             return res.status(200).json({
                 message : "invalid password"
@@ -65,6 +67,7 @@ const login = async (req,res) => {
         }
 
         const token = jwt.sign({id : user.id , email : user.email} , JWT_KEY , {expiresIn : '1d'});
+        // console.log(token)
         return res.status(201).json({
             data : token,
             message : "successfully logged in the user",

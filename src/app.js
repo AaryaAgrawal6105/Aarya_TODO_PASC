@@ -13,7 +13,7 @@ const setupAndStartServer = ()=>{
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({extended : true}));
     app.use('/api/auth' , authRoutes);
-    app.use('api/task' , taskRoutes);
+    // app.use('/api/task' , taskRoutes);
     app.listen(PORT , ()=>{
             console.log(`Server is listening on the port ${PORT}`);
     })
