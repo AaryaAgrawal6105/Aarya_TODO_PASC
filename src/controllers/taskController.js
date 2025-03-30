@@ -1,13 +1,14 @@
 const prisma = require('../config/database');
 
 const createTask = async (req,res) => {
-    const {title}  = req.body;
+    const {title,description}  = req.body;
     const userId = req.user.id;
     try {
         const task = await prisma.task.create({
             data : {
                 title : title,
-                userId : userId
+                userId : userId,
+                description : description
             }
         })
         return res.status(201).json({ message: 'Task added',
@@ -70,7 +71,7 @@ const getTasks = async(req,res)=>{
 
         try {
             const tasks = await prisma.task.findMany({where : {
-                id : req.user.id
+                userId : req.user.id
             }})
             return res.status(200).json({
                 message :"Task fetched successfully",
@@ -104,19 +105,21 @@ const updateTasks = async (req,res) => {
         const task = await prisma.task.findUnique({where : {
             id : id
         }})
-    
-        if(!task || task.id !== userId){
+        console.log(task);
+        if(!task || task.userId !== userId){
             return res.status(400).json({
                 message : "No task is present"
             })
         }
     
         const updateTask = await prisma.task.update({
-            where  : {
+            where  : {id},
+            data:{
                 title : title,
-                completed : completed
+                completed : completed ?? false
             }
         })
+        console.log(updateTask);
         return res.status(200).json({
             message :"Task updated successfully",
             data : updateTask,
@@ -130,7 +133,7 @@ const updateTasks = async (req,res) => {
     
     return res.status(400).json({
         message : "error occured during updating the task",
-        data : "not u[dated",
+        data : "not updated",
         err : error,
         success:false
         })
