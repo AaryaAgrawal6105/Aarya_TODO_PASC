@@ -25,6 +25,7 @@ const signup = async (req , res)=>{
                 }
             })
             // console.log(user);
+            
 
             return res.status(201).json({
                 message : 'user created succesfully ',
